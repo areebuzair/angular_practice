@@ -1,3 +1,23 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+:root{
+    --nav-bg: blue;
+    --nav-text: white;
+}
+
+body{
+    background-color: #ddd;
+}
+
+button{
+    cursor: pointer;
+}
+
+p{
+    max-width: 600px;
+    margin: 0 auto;
+    margin-bottom: 1em;
+    line-height: 1.5;
+}

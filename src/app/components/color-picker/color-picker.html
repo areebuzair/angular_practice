@@ -1,0 +1,10 @@
+<div class="color-picker">
+  <label for="navColor">Choose nav color:</label>
+  <input
+    id="navColor"
+    type="color"
+    [value]="selectedColor"
+    (input)="onColorChange($event)"
+    class="border-[--nav-text]"
+  />
+</div>

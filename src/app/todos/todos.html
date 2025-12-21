@@ -1,0 +1,86 @@
+<h1 class="text-center font-bold text-3xl">Todos</h1>
+<p>On day 2 I made this todos app. It loads existing todos from localstorage when the page loads. You can create, delete and filter todos.</p>
+<p>When I update the todos array, the UI updates automatically.</p>
+<p>I also installed ng-icons. Hopefully I don't get npm attacked.</p>
+<p>This might be the first resource with more options than react I can see, but it took me forever to find a simple
+    hamburger icon... I recommend material-icons (@ng-icons/material-icons)</p>
+<p>There's a LOT of conditional rendering going on in this page.</p>
+
+<div class="max-w-md mx-auto">
+
+    @if(currentMode() !== Modes.write){
+    <div class="flex justify-between items-center gap-4">
+        @if(currentMode()===Modes.delete || currentMode()===Modes.search){
+        <label for="filter" class="inline-block w-full">
+            <input id="filter" type="text" [value]="filtertext()" (input)="filtertext.set($event.target.value)"
+                class="m-0.5 w-full border-gray-300 shadow-sm sm:text-sm bg-white p-2 rounded" placeholder="Search" />
+        </label>
+        }
+
+        <span class="flex gap-2 justify-end">
+            @if(currentMode() === this.Modes.default){
+            <button type="button" class="text-black" (click)="currentMode.set(Modes.search)">
+                <ng-icon name="matSearch" size="24" color="currentColor"></ng-icon>
+            </button>
+            <button type="button" class="text-black" (click)="currentMode.set(Modes.write)">
+                <ng-icon name="matAddCircleOutlineOutline" size="24" color="currentColor"></ng-icon>
+            </button>
+            <button type="button" class="text-black" (click)="currentMode.set(Modes.delete)">
+                <ng-icon name="matDeleteOutline" size="24" color="currentColor"></ng-icon>
+            </button>
+            }
+            @else {
+            <button type="button" class="text-black" (click)="currentMode.set(Modes.default);filtertext.set('')">
+                <ng-icon name="matExitToApp" size="24" color="currentColor"></ng-icon>
+            </button>
+            }
+        </span>
+
+    </div>
+    }
+
+    @if(currentMode() === this.Modes.write){
+    <form (submit)="onNewTodoSubmit($event)" class="flex items-center gap-2 justify-between">
+        <label for="new-todo" class="inline-block w-full">
+            <input id="new-todo" type="text" [value]="newTodoInputText()"
+                (input)="newTodoInputText.set($event.target.value)"
+                class="m-0.5 w-full border-gray-300 shadow-sm sm:text-sm bg-white p-2 rounded" placeholder="New Todo" />
+        </label>
+
+        <button type="button" class="px-2 inline-flex items-center text-red-600"
+            (click)="currentMode.set(Modes.default)">
+            <ng-icon name="matClose" size="24" color="currentColor"></ng-icon>
+        </button>
+
+        <button type="submit" class="text-green-700 px-2 inline-flex items-center disabled:text-gray-400"
+            [disabled]="newTodoInputText().length === 0">
+            <ng-icon name="matCheck" size="24" color="currentColor"></ng-icon>
+        </button>
+
+    </form>
+    }
+
+    <ul>
+        @for(todo of todoItems(); track todo.id){
+        @if(filtertext().length === 0 || todo.title.toLowerCase().includes(filtertext().toLowerCase())){
+        <li class="flex items-center m-2">
+            @if(currentMode() === this.Modes.delete){
+            <button class="text-red-800 inline-flex items-center" type="button" (click)="deleteTodo(todo.id)">
+                <ng-icon name="matDeleteOutline" size="24" color="currentColor"></ng-icon>
+            </button>
+            }
+            <label class="inline-flex items-center gap-3">
+                <input [name]="todo.id" type="checkbox" [checked]="todo.isCompleted" (change)="checkTodo($event)"
+                    class="size-5 rounded border-gray-300 shadow-sm" [disabled]="currentMode() !== Modes.default">
+
+                <span class="font-medium text-gray-700" [class.line-through]="todo.isCompleted"
+                    [class.text-gray-400]="todo.isCompleted">{{todo.title}}</span>
+            </label>
+
+        </li>
+        }
+        }
+
+    </ul>
+
+</div>
