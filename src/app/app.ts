@@ -22,6 +22,7 @@ export class App {
   menuItems: MenuItem[] = [
     { label: 'Introduction', url: '/' },
     { label: 'Todos', url: '/todos' },
+    { label: 'Datapass', url: '/datapass' },
   ];
 
   menuIsOpen = signal(false);

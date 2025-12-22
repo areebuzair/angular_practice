@@ -14,5 +14,12 @@ export const routes: Routes = [
         loadComponent: () => {
             return import('./todos/todos').then((m) => m.Todos);
         }
+    },
+    {
+        path: 'datapass',
+        pathMatch: 'full',
+        loadComponent: () => {
+            return import('./datapass/datapass').then((m) => m.Datapass);
+        }
     }
 ];
