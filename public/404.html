@@ -8,6 +8,8 @@
   var segmentCount = 1;
   var l = window.location;
 
+  console.log(l.toString());
+
   l.replace(
     l.protocol + '//' + l.host +
     l.pathname.split('/').slice(0, 1 + segmentCount).join('/') +
