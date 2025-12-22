@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, OnInit, signal } from '@angular/core'
 import { Paragraph } from '../components/paragraph/paragraph'
 
 @Component({
@@ -7,6 +7,12 @@ import { Paragraph } from '../components/paragraph/paragraph'
   templateUrl: './datapass.html',
   styleUrl: './datapass.css',
 })
-export class Datapass {
+export class Datapass implements OnInit{
+  date = signal(new Date())
+  ngOnInit(): void {
+    setInterval(()=>{
+      this.date.set(new Date());
+    }, 1000)
+  }
 
 }
