@@ -23,6 +23,7 @@ export class App {
     { label: 'Introduction', url: '/' },
     { label: 'Todos', url: '/todos' },
     { label: 'Datapass', url: '/datapass' },
+    { label: 'Map', url: '/map' },
   ];
 
   menuIsOpen = signal(false);

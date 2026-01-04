@@ -21,5 +21,12 @@ export const routes: Routes = [
         loadComponent: () => {
             return import('./datapass/datapass').then((m) => m.Datapass);
         }
+    },
+    {
+        path: 'map',
+        pathMatch: 'full',
+        loadComponent: () => {
+            return import('./mappage/mappage').then((m) => m.Mappage);
+        }
     }
 ];
