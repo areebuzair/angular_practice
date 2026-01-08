@@ -1,48 +1,131 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import * as L from 'leaflet';
+import 'leaflet.heat';
+import { points } from './heatpoints';
 
 @Component({
   selector: 'app-leaflet-map',
-  imports: [],
   templateUrl: './leaflet-map.html',
   styleUrl: './leaflet-map.css',
 })
-export class LeafletMap implements OnInit, AfterViewInit {
-  private map!: L.Map
-  markers: L.Marker[] = [
-    L.marker([23.7771, 90.3994]),
-    L.marker([24, 90]),
-    L.marker([23, 91]),
-  ]
+export class LeafletMap implements AfterViewInit {
+  private map!: L.Map;
+  private heatLayer!: L.HeatLayer;
+  heatDrawingEnabled = false;
 
-  constructor() { }
+  private readonly markerCoords: L.LatLngExpression[] = [
+    [23.7771, 90.3994],
+    [23.72, 90.39],
+    [23.73, 90.38],
+  ];
 
-  ngOnInit() {
-  }
+  private markerGroup = L.layerGroup();
 
-  ngAfterViewInit() {
+  private readonly markers: L.Marker[] = this.markerCoords.map(
+    coords => L.marker(coords)
+  );
+
+  ngAfterViewInit(): void {
     this.initMap();
+    this.addMarkers();
+    this.addPolyline();
+    this.initHeatLayer();
+    this.initRightClickMarker();
     this.centerMap();
   }
 
+  private initMap(): void {
+    this.map = L.map('map', {
+      center: [23.75, 90.39],
+      zoom: 12,
+    });
 
-  private initMap() {
-    const baseMapURl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    this.map = L.map('map');
-    L.tileLayer(baseMapURl).addTo(this.map);
-    for (let marker of this.markers) {
-      marker.addTo(this.map);
-      marker.bindPopup("Hello!")
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+    }).addTo(this.map);
+
+    this.markerGroup.addTo(this.map);
+  }
+
+  private addMarkers(): void {
+    for (const marker of this.markers) {
+      marker
+        .addTo(this.markerGroup)
+        .bindPopup(`Hello from ${marker.getLatLng()}`);
     }
-    L.polyline([[23.7771, 90.3994], [24, 90], [23, 91]]).addTo(this.map)
+  }
+
+  private initRightClickMarker(): void {
+    this.map.on('contextmenu', (e: L.LeafletMouseEvent) => {
+      const marker = L.marker(e.latlng, {
+        draggable: false,
+      });
+
+      marker
+        .addTo(this.markerGroup)
+        .bindPopup(
+          `Lat: ${e.latlng.lat.toFixed(5)}, Lng: ${e.latlng.lng.toFixed(5)}`
+        );
+    });
   }
 
 
-  centerMap() {
-    // Create a boundary based on the markers
-    const bounds = L.latLngBounds(this.markers.map(marker => marker.getLatLng()));
-
-    // Fit the map into the boundary
-    this.map.fitBounds(bounds);
+  private addPolyline(): void {
+    L.polyline(this.markerCoords, {
+      color: 'blue',
+      weight: 3,
+    }).addTo(this.map);
   }
+
+  private initHeatLayer(): void {
+    this.heatLayer = L.heatLayer(points, {
+      radius: 25,
+      blur: 15,
+      maxZoom: 17,
+    }).addTo(this.map);
+
+    let drawingEnabled = true;
+
+    this.map.on('movestart', () => {
+      drawingEnabled = false;
+    });
+
+    this.map.on('moveend', () => {
+      drawingEnabled = true;
+    });
+
+    this.map.on('mousemove', (e: L.LeafletMouseEvent) => {
+      if (drawingEnabled && this.heatDrawingEnabled) {
+        this.heatLayer.addLatLng(e.latlng);
+      }
+    });
+  }
+
+  centerMap(): void {
+    const bounds = L.latLngBounds(
+      this.markers.map(marker => marker.getLatLng())
+    );
+
+    this.map.fitBounds(bounds, {
+      padding: [20, 20],
+    });
+  }
+
+  toggleHeatDrawing(): void {
+    this.heatDrawingEnabled = !this.heatDrawingEnabled;
+  }
+
+  clearHeat(): void {
+    if (confirm("Remove all heat points?")) {
+      this.heatLayer.setLatLngs([]);
+    }
+  }
+
+  clearMarkers(): void {
+    if (confirm("Remove all markers?")) {
+      this.markerGroup.clearLayers();
+    }
+  }
+
+
 }

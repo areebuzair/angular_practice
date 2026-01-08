@@ -1,2 +1,10 @@
 <div id="map" style="height: 300px;width: 60%; margin: 0 auto;"></div>
-<button type="button" class="bg-gray-600 px-1 rounded text-white" (click)="centerMap()">Center</button>
+<div class="flex justify-center gap-x-1 m-1">
+    <button type="button" class="bg-gray-600 px-1 rounded text-white" (click)="centerMap()">Center</button>
+    <button type="button" class="bg-gray-600 px-1 rounded text-white" (click)="toggleHeatDrawing()">
+        {{ heatDrawingEnabled ? 'Stop Heat Drawing' : 'Start Heat Drawing' }}
+    </button>
+    <button type="button" class="bg-red-600 px-1 rounded text-white" (click)="clearHeat()">Clear Heat</button>
+    <button type="button" class="bg-red-600 px-1 rounded text-white" (click)="clearMarkers()">Clear Markers</button>
+</div>
+<p class="text-sm text-gray-700 font-light italic text-center">Right-click to add markers</p>
