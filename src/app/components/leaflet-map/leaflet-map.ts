@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
-import * as L from 'leaflet';
-import 'leaflet.heat';
 import { points } from './heatpoints';
+
+declare const L: typeof import('leaflet');
 
 @Component({
   selector: 'app-leaflet-map',
@@ -35,96 +35,98 @@ export class LeafletMap implements AfterViewInit {
   }
 
   private initMap(): void {
-    this.map = L.map('map', {
-      center: [23.75, 90.39],
-      zoom: 12,
-    });
+  this.map = L.map('map', {
+    center: [23.75, 90.39],
+    zoom: 12,
+  });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-    }).addTo(this.map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+  }).addTo(this.map);
 
-    this.markerGroup.addTo(this.map);
-  }
+  this.markerGroup.addTo(this.map);
+}
 
   private addMarkers(): void {
-    for (const marker of this.markers) {
-      marker
-        .addTo(this.markerGroup)
-        .bindPopup(`Hello from ${marker.getLatLng()}`);
-    }
+  for(const marker of this.markers) {
+  marker
+    .addTo(this.markerGroup)
+    .bindPopup(`Hello from ${marker.getLatLng()}`);
+}
   }
 
   private initRightClickMarker(): void {
-    this.map.on('contextmenu', (e: L.LeafletMouseEvent) => {
-      const marker = L.marker(e.latlng, {
-        draggable: false,
-      });
-
-      marker
-        .addTo(this.markerGroup)
-        .bindPopup(
-          `Lat: ${e.latlng.lat.toFixed(5)}, Lng: ${e.latlng.lng.toFixed(5)}`
-        );
+  this.map.on('contextmenu', (e: L.LeafletMouseEvent) => {
+    const marker = L.marker(e.latlng, {
+      draggable: false,
     });
-  }
+
+    marker
+      .addTo(this.markerGroup)
+      .bindPopup(
+        `Lat: ${e.latlng.lat.toFixed(5)}, Lng: ${e.latlng.lng.toFixed(5)}`
+      );
+  });
+}
 
 
   private addPolyline(): void {
-    L.polyline(this.markerCoords, {
-      color: 'blue',
-      weight: 3,
-    }).addTo(this.map);
-  }
+  L.polyline(this.markerCoords, {
+    color: 'blue',
+    weight: 3,
+  }).addTo(this.map).bindPopup(
+    `This is a line`
+  );
+}
 
   private initHeatLayer(): void {
-    this.heatLayer = L.heatLayer(points, {
-      radius: 25,
-      blur: 15,
-      maxZoom: 17,
-    }).addTo(this.map);
+  this.heatLayer = L.heatLayer(points, {
+    radius: 25,
+    blur: 15,
+    maxZoom: 17,
+  }).addTo(this.map);
 
-    let drawingEnabled = true;
+  let drawingEnabled = true;
 
-    this.map.on('movestart', () => {
-      drawingEnabled = false;
-    });
+  this.map.on('movestart', () => {
+    drawingEnabled = false;
+  });
 
-    this.map.on('moveend', () => {
-      drawingEnabled = true;
-    });
+  this.map.on('moveend', () => {
+    drawingEnabled = true;
+  });
 
-    this.map.on('mousemove', (e: L.LeafletMouseEvent) => {
-      if (drawingEnabled && this.heatDrawingEnabled) {
-        this.heatLayer.addLatLng(e.latlng);
-      }
-    });
-  }
-
-  centerMap(): void {
-    const bounds = L.latLngBounds(
-      this.markers.map(marker => marker.getLatLng())
-    );
-
-    this.map.fitBounds(bounds, {
-      padding: [20, 20],
-    });
-  }
-
-  toggleHeatDrawing(): void {
-    this.heatDrawingEnabled = !this.heatDrawingEnabled;
-  }
-
-  clearHeat(): void {
-    if (confirm("Remove all heat points?")) {
-      this.heatLayer.setLatLngs([]);
+  this.map.on('mousemove', (e: L.LeafletMouseEvent) => {
+    if (drawingEnabled && this.heatDrawingEnabled) {
+      this.heatLayer.addLatLng(e.latlng);
     }
+  });
+}
+
+centerMap(): void {
+  const bounds = L.latLngBounds(
+    this.markers.map(marker => marker.getLatLng())
+  );
+
+  this.map.fitBounds(bounds, {
+    padding: [20, 20],
+  });
+}
+
+toggleHeatDrawing(): void {
+  this.heatDrawingEnabled = !this.heatDrawingEnabled;
+}
+
+clearHeat(): void {
+  if(confirm("Remove all heat points?")) {
+  this.heatLayer.setLatLngs([]);
+}
   }
 
-  clearMarkers(): void {
-    if (confirm("Remove all markers?")) {
-      this.markerGroup.clearLayers();
-    }
+clearMarkers(): void {
+  if(confirm("Remove all markers?")) {
+  this.markerGroup.clearLayers();
+}
   }
 
 

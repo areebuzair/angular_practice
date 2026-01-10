@@ -1,6 +1,7 @@
-import { HeatLatLngTuple } from "leaflet";
+export type HeatPoint = [number, number, number];
 
-export const points: HeatLatLngTuple[] = [
+
+export const points: HeatPoint[] = [
     [
         23.746382895774097,
         90.38211822509766
